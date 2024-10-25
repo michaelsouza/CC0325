@@ -1,4 +1,5 @@
 .venv/**
 codes/matvec/matvec
 codes/matvec/output.txt
+README.docx
 codes/matvec/matvec.bin
