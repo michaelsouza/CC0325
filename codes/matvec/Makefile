@@ -1,16 +1,10 @@
-CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wextra -O2
+matvec.bin: matvec.cpp
+	g++ -std=c++11 -Wall -Wextra -O2 matvec.cpp -lblas -o matvec.bin
 
-TARGET = matvec
-SRCS = matvec.cpp
+.PHONY: clean run
 
-$(TARGET): $(SRCS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
-run: $(TARGET)
-	./$(TARGET)
-
-.PHONY: clean
+run: matvec.bin
+	./matvec.bin
 
 clean:
-	rm -f $(TARGET)
+	rm -f matvec.bin
