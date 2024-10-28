@@ -2,5 +2,7 @@
 codes/matvec/matvec
 codes/matvec/output.txt
 README.docx
-pdf_images/
+pdf_images/**
 split_pdfs/
+references/Watkins02 Fundamentals of matrix computations.pdf
+*.bin
