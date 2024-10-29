@@ -1,9 +1,17 @@
+# Virtual environment
 .venv/**
-codes/matvec/matvec
-codes/matvec/output.txt
+
+# Executables and binaries
+*.bin
+
+# Documentation and references
 README.docx
+references/Watkins02 Fundamentals of matrix computations.pdf
+
+# Generated data and output files
+codes/matmat/output.csv
+codes/matvec/output.csv
+
+# Image and PDF directories
 pdf_images/**
 split_pdfs/
-references/Watkins02 Fundamentals of matrix computations.pdf
-*.bin
-codes/matmat/output.txt
