@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cstdlib> // For rand() and srand()
 #include <ctime>   // For time()
-
+#include <fstream> // For ofstream
 using namespace std;
 
 // Function to initialize a matrix with random values using rand() % 100
@@ -51,7 +51,8 @@ void blockMatrixMultiply(const vector<double> &A, const vector<double> &B, vecto
 }
 
 void profile_matmat(int n, const vector<int> &blockSizes, 
-                   const vector<double> &A, const vector<double> &B) {
+                   const vector<double> &A, const vector<double> &B,
+                   std::ofstream &outputFile) {
     // Initialize result matrices
     vector<double> C_std(n * n, 0.0);
     vector<double> C_blk(n * n, 0.0);
@@ -61,6 +62,9 @@ void profile_matmat(int n, const vector<int> &blockSizes,
     standardMatrixMultiply(A, B, C_std, n);
     auto toc = chrono::high_resolution_clock::now();
     auto time_std = chrono::duration_cast<chrono::microseconds>(toc - tic).count();
+
+    outputFile << n << ", " << 1 << ", " << time_std << std::endl;
+    std::cout << n << ", " << 1 << ", " << time_std << std::endl;
 
     // Iterate over block sizes
     for (int blockSize : blockSizes) {
@@ -74,7 +78,8 @@ void profile_matmat(int n, const vector<int> &blockSizes,
         blockMatrixMultiply(A, B, C_blk, n, blockSize);
         toc = chrono::high_resolution_clock::now();
         auto time_block = chrono::duration_cast<chrono::microseconds>(toc - tic).count();
-        cout << n << ", " << blockSize << ", " << time_std << ", " << time_block << endl;
+        outputFile << n << ", " << blockSize << ", " << time_block << std::endl;
+        std::cout << n << ", " << blockSize << ", " << time_block << std::endl;
 
         // Verify correctness with a tolerance for floating-point operations
         const double epsilon = 1e-6;
@@ -85,14 +90,19 @@ void profile_matmat(int n, const vector<int> &blockSizes,
 }
 
 int main() {
+    std::string filename = "output.txt";
+    std::ofstream outputFile(filename); // Open a file for writing output
+
     // Seed the random number generator
     srand(static_cast<unsigned int>(time(0)));
 
-    cout << "MatrixSize, BlockSize, TimeStd(us), TimeBlock(us)" << endl;
+    // Write header to file and console
+    outputFile << "MatrixSize,BlockSize,Time(us)" << std::endl;
+    std::cout << "MatrixSize,BlockSize,Time(us)" << std::endl;
 
     // Define matrix sizes and block sizes
-    vector<int> matrix_sizes = {128, 256, 512, 1024};
-    vector<int> block_sizes = {16, 32, 64};
+    vector<int> matrix_sizes = {200, 300, 400, 500, 600, 700, 750, 800, 850, 900};
+    vector<int> block_sizes = {4, 8, 16, 32, 64};
 
     for (int n : matrix_sizes) {
         // Initialize matrices A and B
@@ -102,7 +112,7 @@ int main() {
         initializeMatrix(B, n);
 
         // Profile standard and block matrix multiplication
-        profile_matmat(n, block_sizes, A, B);
+        profile_matmat(n, block_sizes, A, B, outputFile);
     }
 
     return EXIT_SUCCESS;
