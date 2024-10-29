@@ -1,50 +1,56 @@
-#include <iostream>
-#include <vector>
-#include <chrono>
-#include <cassert>
-#include <cstdlib> // For rand() and srand()
-#include <ctime>   // For time()
-#include <fstream> // For ofstream
-#include <iomanip> // For setprecision
+#include <iostream> // input and output operations
+#include <iomanip> // manipulating input/output stream formatting
+#include <vector> // using vectors
+#include <chrono> // time-related functions
+#include <random> // generating random numbers
+#include <cmath> // mathematical functions
+#include <cassert> // debugging purposes
+#include <fstream> // file operations
+// Function to initialize a matrix with random values
+void initialize_matrix(std::vector<double>& M, int N) {
+    std::mt19937 gen(42); // Fixed seed for reproducibility
+    std::uniform_real_distribution<> dis(0.0, 1.0);
 
-using namespace std;
-
-// Function to initialize a matrix with random values using rand() % 100
-void initializeMatrix(vector<double> &mat, int n) {
-    for (int i = 0; i < n * n; ++i) {
-        mat[i] = rand() % 100;
+    for (int i = 0; i < N * N; ++i) {
+        M[i] = dis(gen);
     }
 }
 
-// Standard matrix multiplication
-void standardMatrixMultiply(const vector<double> &A, const vector<double> &B, vector<double> &C, int n) {
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
+// Standard matrix multiplication (naïve triple-nested loop)
+// Computes C = A * B
+// A, B, and C are stored in row-major order in 1D std::vector<double>
+void matmul_standard(const std::vector<double>& A, const std::vector<double>& B,
+                     std::vector<double>& C, int N) {
+    // For each row of A
+    for (int i = 0; i < N; ++i) {
+        // For each column of B
+        for (int j = 0; j < N; ++j) {
             double sum = 0.0;
-            for (int k = 0; k < n; ++k) {
-                sum += A[i * n + k] * B[k * n + j];
+            // Compute the dot product of the i-th row of A and j-th column of B
+            for (int k = 0; k < N; ++k) {
+                sum += A[i * N + k] * B[k * N + j];
             }
-            C[i * n + j] = sum;
+            C[i * N + j] = sum;
         }
     }
 }
 
-// Block matrix multiplication
-void blockMatrixMultiply(const vector<double> &A, const vector<double> &B, vector<double> &C, int n, int blockSize) {
-    for (int i = 0; i < n; i += blockSize) {
-        for (int k = 0; k < n; k += blockSize) {
-            for (int j = 0; j < n; j += blockSize) {
-                // Compute min to handle edge cases
-                int i_max = min(i + blockSize, n);
-                int k_max = min(k + blockSize, n);
-                int j_max = min(j + blockSize, n);
-                
-                for (int ii = i; ii < i_max; ++ii) {
-                    for (int kk = k; kk < k_max; ++kk) {
-                        double a_val = A[ii * n + kk];
-                        for (int jj = j; jj < j_max; ++jj) {
-                            C[ii * n + jj] += a_val * B[kk * n + jj];
+// Blocked matrix multiplication
+// Computes C = A * B using blocking to improve cache performance
+void matmul_blocked(const std::vector<double>& A, const std::vector<double>& B,
+                    std::vector<double>& C, int N, int block_size) {
+    // Loop over blocks
+    for (int ii = 0; ii < N; ii += block_size) {
+        for (int jj = 0; jj < N; jj += block_size) {
+            for (int kk = 0; kk < N; kk += block_size) {
+                // Loop within blocks
+                for (int i = ii; i < std::min(ii + block_size, N); ++i) {
+                    for (int j = jj; j < std::min(jj + block_size, N); ++j) {
+                        double sum = C[i * N + j]; // Use existing value in C
+                        for (int k = kk; k < std::min(kk + block_size, N); ++k) {
+                            sum += A[i * N + k] * B[k * N + j];
                         }
+                        C[i * N + j] = sum;
                     }
                 }
             }
@@ -52,102 +58,91 @@ void blockMatrixMultiply(const vector<double> &A, const vector<double> &B, vecto
     }
 }
 
-void profile_matmat(int n, const vector<int> &blockSizes, 
-                   const vector<double> &A, const vector<double> &B,
-                   ofstream &outputFile) {
-    const int num_runs = 3; // Number of repetitions for each test
-    const double epsilon = 1e-6; // Tolerance for floating-point comparison
-
-    // Initialize result matrices
-    vector<double> C_std(n * n, 0.0);
-    vector<double> C_blk(n * n, 0.0);
-    vector<double> C_std_ref(n * n, 0.0); // Reference result from the first run
-
-    // Aggregate time for standard matrix multiplication
-    long long total_time_std = 0;
-
-    for (int run = 1; run <= num_runs; ++run) {
-        fill(C_std.begin(), C_std.end(), 0.0);
-        
-        auto tic = chrono::high_resolution_clock::now();
-        standardMatrixMultiply(A, B, C_std, n);
-        auto toc = chrono::high_resolution_clock::now();
-        auto time_std = chrono::duration_cast<chrono::microseconds>(toc - tic).count();
-        total_time_std += time_std;
-
-        // Store the first run's result as reference
-        if (run == 1) {
-            C_std_ref = C_std;
-        } else {
-            // Optionally, verify consistency across runs
-            for (int i = 0; i < n * n; ++i) {
-                assert(abs(C_std_ref[i] - C_std[i]) < epsilon);
-            }
+// Function to compare two matrices for equality within a tolerance
+bool compare_matrices(const std::vector<double>& M1, const std::vector<double>& M2, int N) {
+    double epsilon = 1e-6; // Tolerance for floating-point comparison
+    for (int i = 0; i < N * N; ++i) {
+        if (std::abs(M1[i] - M2[i]) > epsilon) {
+            return false;
         }
     }
-
-    // Output the total time for standard multiplication
-    outputFile << n << ", " << 1 << ", " << total_time_std << std::endl;
-    cout << n << ", " << 1 << ", " << total_time_std << std::endl;
-
-    // Iterate over block sizes
-    for (int blockSize : blockSizes) {
-        if (blockSize > n) continue; // Skip invalid block sizes
-
-        long long total_time_block = 0;
-
-        for (int run = 1; run <= num_runs; ++run) {
-            fill(C_blk.begin(), C_blk.end(), 0.0);
-            
-            auto tic = chrono::high_resolution_clock::now();
-            blockMatrixMultiply(A, B, C_blk, n, blockSize);
-            auto toc = chrono::high_resolution_clock::now();
-            auto time_block = chrono::duration_cast<chrono::microseconds>(toc - tic).count();
-            total_time_block += time_block;
-
-            // Verify correctness against the reference result
-            for (int i = 0; i < n * n; ++i) {
-                assert(abs(C_std_ref[i] - C_blk[i]) < epsilon);
-            }
-        }
-
-        // Output the total time for block multiplication
-        outputFile << n << ", " << blockSize << ", " << total_time_block << std::endl;
-        cout << n << ", " << blockSize << ", " << total_time_block << std::endl;
-    }
+    return true;
 }
 
 int main() {
-    std::string filename = "output.txt";
-    ofstream outputFile(filename); // Open a file for writing output
+    // output file
+    std::string filename = "output.csv";
+    std::ofstream outputFile(filename);
 
-    if (!outputFile.is_open()) {
-        cerr << "Failed to open the output file." << endl;
-        return EXIT_FAILURE;
+    // Matrix sizes
+    std::vector<int> N = {128, 256, 384, 512, 640, 768, 896, 1024};
+    // Block sizes
+    std::vector<int> block_sizes = {2, 4, 8, 16, 32};
+
+    // Output the total execution times and speedups
+    std::cout << std::fixed << std::setprecision(6);
+    std::cout << "MatrixSize,BlockSize,Time(s),Speedup\n";
+    // Write to output file
+    outputFile << "MatrixSize,BlockSize,Time(s),Speedup\n";
+
+    double time_standard = 0.0;
+    std::vector<double> A, B, C_standard;
+    int n = 0;
+    for (size_t i = 0; i < N.size(); ++i) {
+        n = N[i];
+        // Matrices A, B, and C are stored in row-major order
+        A.resize(n * n);
+        B.resize(n * n);
+        C_standard.resize(n * n);
+        // Initialize matrices with random values
+        initialize_matrix(A, n);
+        initialize_matrix(B, n);
+        // Variables to accumulate execution times
+        time_standard = 0.0;
+        // Execute standard matrix multiplication 3 times
+        for (int run = 0; run < 3; ++run) {
+            // Reset C_standard
+            std::fill(C_standard.begin(), C_standard.end(), 0.0);
+
+            auto start = std::chrono::high_resolution_clock::now();
+            matmul_standard(A, B, C_standard, n);
+            auto end = std::chrono::high_resolution_clock::now();
+
+            std::chrono::duration<double> elapsed = end - start;
+            time_standard += elapsed.count();
+        }
+        // Write to output file
+        outputFile << n << "," << 1 << "," << time_standard << "," << 1 << "\n";
+        // Write to console
+        std::cout << n << "," << 1 << "," << time_standard << "," << 1 << "\n";
     }
 
-    // Seed the random number generator
-    srand(static_cast<unsigned int>(time(0)));
+    // Execute blocked matrix multiplication for different block sizes
+    std::vector<double> C_blocked(n * n);
+    for (size_t idx = 0; idx < block_sizes.size(); ++idx) {
+        const int block_size = block_sizes[idx];
+        double time_blocked = 0.0;
+        // Accumulate time over 3 runs
+        for (int run = 0; run < 3; ++run) {
+            // Reset C_blocked
+            std::fill(C_blocked.begin(), C_blocked.end(), 0.0);
 
-    // Write header to file and console
-    outputFile << "MatrixSize,BlockSize,Time(us)" << std::endl;
-    cout << "MatrixSize,BlockSize,Time(us)" << std::endl;
+            auto start = std::chrono::high_resolution_clock::now();
+            matmul_blocked(A, B, C_blocked, n, block_size);
+            auto end = std::chrono::high_resolution_clock::now();
 
-    // Define matrix sizes and block sizes
-    vector<int> matrix_sizes = {200, 300, 400, 500, 600, 700, 750, 800, 850, 900};
-    vector<int> block_sizes = {4, 8, 16, 32, 64};
+            std::chrono::duration<double> elapsed = end - start;
+            time_blocked += elapsed.count();
+        }
 
-    for (int n : matrix_sizes) {
-        // Initialize matrices A and B
-        vector<double> A(n * n);
-        vector<double> B(n * n);
-        initializeMatrix(A, n);
-        initializeMatrix(B, n);
+        assert(compare_matrices(C_standard, C_blocked, n));
 
-        // Profile standard and block matrix multiplication
-        profile_matmat(n, block_sizes, A, B, outputFile);
+        const double speedup = time_standard / time_blocked;
+        // Write to output file
+        outputFile << n << "," << block_size << "," << time_blocked << "," << speedup << "\n";
+        // Write to console
+        std::cout << n << "," << block_size << "," << time_blocked << "," << speedup << "\n";
     }
 
-    outputFile.close();
-    return EXIT_SUCCESS;
+    return 0;
 }
