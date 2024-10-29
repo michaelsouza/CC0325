@@ -32,7 +32,8 @@ void fill_vector(double* vector, int nrows){
 
 
 void profile_matvec(std::vector<int> NROWS) {
-    std::string filename = "output.txt";
+    // output file
+    std::string filename = "output.csv";
     std::ofstream outputFile(filename); // Open a file for writing output
 
     // Write header to file and console
