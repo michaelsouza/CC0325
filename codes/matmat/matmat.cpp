@@ -5,6 +5,8 @@
 #include <cstdlib> // For rand() and srand()
 #include <ctime>   // For time()
 #include <fstream> // For ofstream
+#include <iomanip> // For setprecision
+
 using namespace std;
 
 // Function to initialize a matrix with random values using rand() % 100
@@ -52,53 +54,84 @@ void blockMatrixMultiply(const vector<double> &A, const vector<double> &B, vecto
 
 void profile_matmat(int n, const vector<int> &blockSizes, 
                    const vector<double> &A, const vector<double> &B,
-                   std::ofstream &outputFile) {
+                   ofstream &outputFile) {
+    const int num_runs = 3; // Number of repetitions for each test
+    const double epsilon = 1e-6; // Tolerance for floating-point comparison
+
     // Initialize result matrices
     vector<double> C_std(n * n, 0.0);
     vector<double> C_blk(n * n, 0.0);
+    vector<double> C_std_ref(n * n, 0.0); // Reference result from the first run
 
-    // Measure time for standard matrix multiplication
-    auto tic = chrono::high_resolution_clock::now();
-    standardMatrixMultiply(A, B, C_std, n);
-    auto toc = chrono::high_resolution_clock::now();
-    auto time_std = chrono::duration_cast<chrono::microseconds>(toc - tic).count();
+    // Aggregate time for standard matrix multiplication
+    long long total_time_std = 0;
 
-    outputFile << n << ", " << 1 << ", " << time_std << std::endl;
-    std::cout << n << ", " << 1 << ", " << time_std << std::endl;
+    for (int run = 1; run <= num_runs; ++run) {
+        fill(C_std.begin(), C_std.end(), 0.0);
+        
+        auto tic = chrono::high_resolution_clock::now();
+        standardMatrixMultiply(A, B, C_std, n);
+        auto toc = chrono::high_resolution_clock::now();
+        auto time_std = chrono::duration_cast<chrono::microseconds>(toc - tic).count();
+        total_time_std += time_std;
+
+        // Store the first run's result as reference
+        if (run == 1) {
+            C_std_ref = C_std;
+        } else {
+            // Optionally, verify consistency across runs
+            for (int i = 0; i < n * n; ++i) {
+                assert(abs(C_std_ref[i] - C_std[i]) < epsilon);
+            }
+        }
+    }
+
+    // Output the total time for standard multiplication
+    outputFile << n << ", " << 1 << ", " << total_time_std << std::endl;
+    cout << n << ", " << 1 << ", " << total_time_std << std::endl;
 
     // Iterate over block sizes
     for (int blockSize : blockSizes) {
         if (blockSize > n) continue; // Skip invalid block sizes
 
-        // Reset C_blk
-        fill(C_blk.begin(), C_blk.end(), 0.0);
+        long long total_time_block = 0;
 
-        // Measure time for block matrix multiplication
-        tic = chrono::high_resolution_clock::now();
-        blockMatrixMultiply(A, B, C_blk, n, blockSize);
-        toc = chrono::high_resolution_clock::now();
-        auto time_block = chrono::duration_cast<chrono::microseconds>(toc - tic).count();
-        outputFile << n << ", " << blockSize << ", " << time_block << std::endl;
-        std::cout << n << ", " << blockSize << ", " << time_block << std::endl;
+        for (int run = 1; run <= num_runs; ++run) {
+            fill(C_blk.begin(), C_blk.end(), 0.0);
+            
+            auto tic = chrono::high_resolution_clock::now();
+            blockMatrixMultiply(A, B, C_blk, n, blockSize);
+            auto toc = chrono::high_resolution_clock::now();
+            auto time_block = chrono::duration_cast<chrono::microseconds>(toc - tic).count();
+            total_time_block += time_block;
 
-        // Verify correctness with a tolerance for floating-point operations
-        const double epsilon = 1e-6;
-        for (int i = 0; i < n * n; ++i) {
-            assert(abs(C_std[i] - C_blk[i]) < epsilon);
+            // Verify correctness against the reference result
+            for (int i = 0; i < n * n; ++i) {
+                assert(abs(C_std_ref[i] - C_blk[i]) < epsilon);
+            }
         }
+
+        // Output the total time for block multiplication
+        outputFile << n << ", " << blockSize << ", " << total_time_block << std::endl;
+        cout << n << ", " << blockSize << ", " << total_time_block << std::endl;
     }
 }
 
 int main() {
     std::string filename = "output.txt";
-    std::ofstream outputFile(filename); // Open a file for writing output
+    ofstream outputFile(filename); // Open a file for writing output
+
+    if (!outputFile.is_open()) {
+        cerr << "Failed to open the output file." << endl;
+        return EXIT_FAILURE;
+    }
 
     // Seed the random number generator
     srand(static_cast<unsigned int>(time(0)));
 
     // Write header to file and console
     outputFile << "MatrixSize,BlockSize,Time(us)" << std::endl;
-    std::cout << "MatrixSize,BlockSize,Time(us)" << std::endl;
+    cout << "MatrixSize,BlockSize,Time(us)" << std::endl;
 
     // Define matrix sizes and block sizes
     vector<int> matrix_sizes = {200, 300, 400, 500, 600, 700, 750, 800, 850, 900};
@@ -115,5 +148,6 @@ int main() {
         profile_matmat(n, block_sizes, A, B, outputFile);
     }
 
+    outputFile.close();
     return EXIT_SUCCESS;
 }

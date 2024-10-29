@@ -6,3 +6,4 @@ pdf_images/**
 split_pdfs/
 references/Watkins02 Fundamentals of matrix computations.pdf
 *.bin
+codes/matmat/output.txt
