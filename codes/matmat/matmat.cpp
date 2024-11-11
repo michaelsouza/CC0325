@@ -6,7 +6,12 @@
 #include <cmath> // mathematical functions
 #include <cassert> // debugging purposes
 #include <fstream> // file operations
-// Function to initialize a matrix with random values
+
+/**
+ * @brief Initializes a matrix with random values between 0 and 1
+ * @param M Pointer to the matrix to be initialized
+ * @param N Number of rows/columns in the square matrix
+ */
 void initialize_matrix(std::vector<double>& M, int N) {
     std::mt19937 gen(42); // Fixed seed for reproducibility
     std::uniform_real_distribution<> dis(0.0, 1.0);
@@ -16,8 +21,13 @@ void initialize_matrix(std::vector<double>& M, int N) {
     }
 }
 
-// Standard matrix multiplication (naïve triple-nested loop)
-// Computes C = A * B
+/**
+ * @brief Performs standard matrix multiplication (naïve triple-nested loop)
+ * @param A Pointer to the input matrix A in row-major order
+ * @param B Pointer to the input matrix B in row-major order
+ * @param C Pointer to store the resulting matrix C in row-major order
+ * @param N Number of rows/columns in the square matrix
+ */
 // A, B, and C are stored in row-major order in 1D std::vector<double>
 void matmul_standard(const std::vector<double>& A, const std::vector<double>& B,
                      std::vector<double>& C, int N) {
@@ -35,8 +45,14 @@ void matmul_standard(const std::vector<double>& A, const std::vector<double>& B,
     }
 }
 
-// Blocked matrix multiplication
-// Computes C = A * B using blocking to improve cache performance
+/**
+ * @brief Performs blocked matrix multiplication to improve cache performance
+ * @param A Pointer to the input matrix A in row-major order
+ * @param B Pointer to the input matrix B in row-major order
+ * @param C Pointer to store the resulting matrix C in row-major order
+ * @param N Number of rows/columns in the square matrix
+ * @param block_size Size of the blocks to use for blocking
+ */
 void matmul_blocked(const std::vector<double>& A, const std::vector<double>& B,
                     std::vector<double>& C, int N, int block_size) {
     // Loop over blocks
@@ -58,7 +74,13 @@ void matmul_blocked(const std::vector<double>& A, const std::vector<double>& B,
     }
 }
 
-// Function to compare two matrices for equality within a tolerance
+/**
+ * @brief Compares two matrices for equality within a tolerance
+ * @param M1 Pointer to the first matrix
+ * @param M2 Pointer to the second matrix
+ * @param N Number of rows/columns in the square matrix
+ * @return True if the matrices are equal within the tolerance, false otherwise
+ */
 bool compare_matrices(const std::vector<double>& M1, const std::vector<double>& M2, int N) {
     double epsilon = 1e-6; // Tolerance for floating-point comparison
     for (int i = 0; i < N * N; ++i) {
@@ -69,6 +91,10 @@ bool compare_matrices(const std::vector<double>& M1, const std::vector<double>& 
     return true;
 }
 
+/**
+ * @brief Main function that runs the matrix multiplication performance tests
+ * @return EXIT_SUCCESS on successful execution
+ */
 int main() {
     // output file
     std::string filename = "output.csv";

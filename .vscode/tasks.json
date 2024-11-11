@@ -1,0 +1,75 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "pgen",
+            "type": "shell",
+            "command": "../prompt-generator/.venv/bin/python ../prompt-generator/pgen.py prompt.yml",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "pgen git",
+            "type": "shell",
+            "command": "../prompt-generator/.venv/bin/python ../prompt-generator/pgen.py prompt.yml --gitdiff",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "black!",
+            "type": "shell",
+            "command": "black",
+            "args": [
+                "${file}",
+                "--line-length",
+                "120"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+        },
+        {
+            "label": "djlint format",
+            "type": "shell",
+            "command": "djlint",
+            "args": [
+                "--reformat",
+                "${file}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "djlint check",
+            "type": "shell",
+            "command": "djlint",
+            "args": [                
+                "${file}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": []
+        }
+    ]
+}

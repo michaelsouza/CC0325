@@ -3,6 +3,7 @@
 
 # Executables and binaries
 *.bin
+*.pyc
 
 # Documentation and references
 README.docx
