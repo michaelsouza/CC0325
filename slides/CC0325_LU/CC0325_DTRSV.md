@@ -135,19 +135,19 @@ Watkins, David S. Fundamentals of matrix computations. John Wiley & Sons, 2004.
 ---
 
 ## Exercícios
-1. Implemente a função `forwardSubstitution` em C.
+1. Implemente a função `dtrsv_naive` em C.
 
 ```c
-void forwardSubstitution(
+void dtrsv_naive(
   double** L, // matriz triangular inferior
   double* b,  // vetor de termos constantes
   double* y,  // vetor de incógnitas
   int n       // tamanho da matriz
 );
 ```
-2. Faça um gráfico do tempo de execução da função `forwardSubstitution` em função do tamanho da matriz $L$.
-3. Qual é a complexidade computacional da função `forwardSubstitution`?
-4. Compare a performance da função `forwardSubstitution` com a função `dtrsv` da biblioteca LAPACK.
+2. Faça um gráfico do tempo de execução da função `dtrsv_naive` em função do tamanho da matriz $L$.
+3. Qual é a complexidade computacional da função `dtrsv_naive`?
+4. Compare a performance da função `dtrsv` com a função `dtrsv` da biblioteca LAPACK.
 
 ---
 <!-- backgroundColor: orange -->

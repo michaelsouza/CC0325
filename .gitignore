@@ -16,3 +16,7 @@ codes/matvec/output.csv
 # Image and PDF directories
 pdf_images/**
 split_pdfs/
+dtrsv.exe
+dtrsv.cpp
+codes/dtrsv.csv
+dtrsv.csv
