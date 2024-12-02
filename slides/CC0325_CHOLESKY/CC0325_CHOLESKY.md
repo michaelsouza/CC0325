@@ -41,15 +41,13 @@ https://en.wikipedia.org/wiki/Andr%C3%A9-Louis_Cholesky
 - Todos os autovalores devem ser positivos.
 
 </div>
-<div style="width: 50%; border: 1px solid; border-radius:15px; padding-left: 20px;">
-
-### Conceitos relacionados:
+<div style="width: 50%; border: 1px solid; border-radius:15px; padding: 20px;">
 
 ***Menores Principais Dominantes***
 Determinantes das submatrizes de $A$ formadas pelas primeiras $k$ linhas e colunas.
 
 ***Autovalores***
-Raízes do polinômio característico de $A$.
+Raízes do polinômio característico de $A$, ou seja, $p(\lambda)=det(A-\lambda I)$.
 
 </div>
 </div>
@@ -112,8 +110,8 @@ $$
 Inicialize $L$ como uma matriz triangular inferior de zeros.
 $$
 \begin{eqnarray}
-L_{j,j} &=& \sqrt{A_{j,j} - \sum_{k=1}^{j-1} L_{j,k}^* L_{j,k}},\\
-L_{i,j} &=& \frac{1}{L_{j,j}} \left(A_{i,j} - \sum_{k=1}^{j-1} L_{j,k}^* L_{i,k} \right) \quad \text{para } i > j.
+L_{j,j} &=& \sqrt{A_{j,j} - \sum_{k=1}^{j-1} L_{j,k}^2},\\
+L_{i,j} &=& \frac{1}{L_{j,j}} \left(A_{i,j} - \sum_{k=1}^{j-1} L_{j,k} L_{i,k} \right) \quad \text{para } i > j.
 \end{eqnarray}
 $$
 
