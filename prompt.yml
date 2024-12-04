@@ -3,10 +3,13 @@
 - rich 13.9.2 (python package)
 
 # sources:
-codes: yes
+codes: no
   matmat/simple-cache.py: all  
+
+slides: yes
+  CC0325_CHOLESKY/CC0325_CHOLESKY.md: all
 
 # user_request
 """
-In the class Memory, update the constructor documentation.
+Por favor, tomando por modelo o slide CC0325_CHOLESKY.md, escreva um slide sobre a decomposição LU. Por favor, apresente a teoria em termos de operações elementares e faça um a conexão com a eliminação de Gauss.
 """
