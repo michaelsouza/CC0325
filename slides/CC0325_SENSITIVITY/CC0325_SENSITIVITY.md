@@ -97,6 +97,65 @@ Quarteroni, Alfio, Fausto Saleri, and Paola Gervasio. Scientific computing with 
 
 ---
 
+<div style="display: flex; justify-content: space-between; gap: 20px;">
+<div style="flex: 1; padding: 0px;">
+
+## Precisão Numérica
+A precisão numérica é afetada pela ***ordem das operações aritméticas*** (pelo algoritmo). 
+
+Como ilustração, suponha uma máquina com dois algarismos significativos e que desejamos calcular
+
+$$1 + \epsilon + \epsilon + \ldots + \epsilon,$$
+
+onde $\epsilon=3.0 \times 10^{-2}$ e que tenhamos $n=11$ parcelas.
+
+  </div>
+  <div style="flex: 1; border: 1px solid black; padding: 20px; border-radius: 10px;">
+    <h6>Algoritmo Ingênuo de Soma </h6>
+
+```python
+s = 0
+for i in range(n):
+  s += epsilon
+```
+   
+<h6>Algoritmo de Soma de Kahan</h6>
+
+```python
+s = 0
+c = 0
+for i in range(n):
+  # y : parcela + compensação
+  y = epsilon - c
+  # soma efetiva
+  t = s + y       
+  # c : erro de arredondamento
+  c = (t - s) - y 
+  s = t
+```
+  </div>
+</div>
+
+---
+
+## Algoritmo de Soma de Kahan
+
+<div style="font-size: 0.9em; display: flex; justify-content: center;">
+
+$k$ | $y = \epsilon - c$ | $t = s + y$ | $c = (t - s) - y$ | $s = t$
+|:-:|:-:|:-:|:-:|:-:|
+1| $3.0 \times 10^{-2}$ | $1.0$ | $(1.0 - 0.0) - 3.0 \times 10^{-2} = -3.0 \times 10^{-2}$ | $1.0$ |
+2| $6.0 \times 10^{-2}$ | $1.0$ | $(1.0 - 0.0) - 6.0 \times 10^{-2} = -3.0 \times 10^{-2}$ | $1.0$ |
+3| $9.0 \times 10^{-2}$ | $1.0$ | $(1.0 - 0.0) - 9.0 \times 10^{-2} = -6.0 \times 10^{-2}$ | $1.0$ |
+4| $1.2 \times 10^{-1}$ | $1.1$ | $(1.1 - 1.0) - 1.2 \times 10^{-2} = -2.0 \times 10^{-2}$ | $1.1$ |
+5| $5.0 \times 10^{-2}$ | $1.1$ | $(1.1 - 1.1) - 5.0 \times 10^{-2} = -5.0 \times 10^{-2}$ | $1.1$ |
+6| $8.0 \times 10^{-2}$ | $1.1$ | $(1.1 - 1.1) - 8.0 \times 10^{-2} = -8.0 \times 10^{-2}$ | $1.1$ |
+7| $1.1 \times 10^{-1}$ | $1.2$ | $(1.2 - 1.1) - 1.1 \times 10^{-1} = -1.0 \times 10^{-2}$ | $1.2$ |
+
+</div>
+
+---
+
 ## Caso de estudo
 
 Para a matriz $A$, calcule a solução dos sistemas lineares $Ax = b$ e $A\hat{x} = \hat{b}$ onde
@@ -186,11 +245,11 @@ A norma matricial induzida é uma norma matricial.
 
 Uma norma vetorial e sua norma matricial induzida satisfazem a desigualdade 
 
-$$||Ax|| \leq ||A|| ||x||$$
+$$||Ax|| \leq ||A||\,||x||$$
 
 para todo $A \in \mathbb{R}^{n \times n}$ e $x \in \mathbb{R}^n$. 
 
-Além disso, sempre existe um vetor $x$ tal que $||Ax|| = ||A|| ||x||.$
+Além disso, sempre existe um vetor $x$ tal que $||Ax|| = ||A||\,||x||.$
 
 ---
 
@@ -198,15 +257,13 @@ Além disso, sempre existe um vetor $x$ tal que $||Ax|| = ||A|| ||x||.$
 
 1. $Ax=b$ e $A(x+\delta x)=b + \delta b$ implica em $A\delta x = \delta b$, portanto $\delta x = A^{-1} \delta b$.
 
-2. $Ax=b$ implica em $x = A^{-1} b$.
-
-3. Sabendo que $||Az|| \leq ||A|| ||z||$ para todo $z \in \mathbb{R}^n$, temos
-
-$$||A^{-1} \delta b|| \leq ||A^{-1}|| ||\delta b|| \quad \text{e} \quad ||A^{-1} b|| \leq ||A^{-1}|| ||b||.$$
+2. Uma vez que $||Az|| \leq ||A||\,||z||$ para todo $z \in \mathbb{R}^n$, temos
+  2.1 $||\delta x|| \leq ||A^{-1}||\,||\delta b||.$
+  2.2 $||b|| \leq ||A||\,||x|| \Longrightarrow ||x|| \geq \Large{\frac{||b||}{||A||}}.$
 
 Portanto,
 
-$$\frac{||\delta x||}{||x||} \leq ||A||||A^{-1}|| \frac{|| \delta b ||}{||b||}.$$
+$$\frac{||\delta x||}{||x||} \leq ||A||\,||A^{-1}|| \frac{|| \delta b ||}{||b||}.$$
 
 ---
 
@@ -220,15 +277,15 @@ $$\kappa(A) = ||A|| ||A^{-1}||.$$
 2. *Em um sistema linear com número de condição alto, pequenas variações nos dados podem causar grandes variações na solução.*
 
 
-**Retornando ao caso de estudo**
+**Retornando ao caso de estudo...**
 
-Calcule o número de condição da matriz $A$ para as normas de Frobenius.
+Calcule o número de condição da matriz $A$ para a norma de Frobenius.
 
 ---
 
 ## Exemplo: Matrizes de Hilbert
 
-Os exemplos mais famosos de matrizes mal condicionadas são as **matrizes de Hilbert**, definidas por $h_{ij} = 1 / (i + j - 1)$. 
+Um dos exemplos mais famosos de matrizes mal condicionadas são as **matrizes de Hilbert**, definidas por $h_{ij} = 1 / (i + j - 1)$. 
 
 
 Essas matrizes são simétricas, podem ser mostradas como positivas definidas e se tornam cada vez mais mal condicionadas à medida que $n$ aumenta. Por exemplo,  $\kappa_2(H_4) \approx 1.6 \times 10^4$ e $\kappa_2(H_8) \approx 1.5 \times 10^{10}$.
