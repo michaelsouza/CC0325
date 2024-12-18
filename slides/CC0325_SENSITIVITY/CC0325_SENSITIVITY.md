@@ -301,6 +301,161 @@ H_4 =
 $$
 
 ---
+
+<div style="position: fixed; top: 20px; width: 100%; background-color: white; z-index: 1000;">
+<h2 style="text-align: left;">Interpretação Geométrica do Condicionamento</h2>
+</div>
+
+### Definições
+Ampliação máxima e mínima
+
+$$maxmag(A) = \max_{x\neq 0}\frac{||Ax||}{||x||}\quad \text{ e } \quad minmag(A)=\frac{||Ax||}{||x||}$$
+
+***Nota***: Ampliação máxima é outro nome para a norma induzida $||A||$.
+
+### Propriedades
+
+$$maxmag(A) = \frac{1}{minmag (A^{-1})}\quad \text{ e } maxmag(A^{-1}) = \frac{1}{minmag (A)}$$
+
+---
+
+<div style="position: fixed; top: 20px; width: 100%; background-color: white; z-index: 1000;">
+<h2 style="text-align: left;">Interpretação Geométrica do Condicionamento</h2>
+</div>
+
+### Prova
+Sabendo que $\displaystyle {maxmag(A) = \max_{x\neq 0}\frac{||Ax||}{||x||}}$ e escrevendo $y=Ax$, obtemos
+
+$$\begin{eqnarray}
+\text{maxmag}(A) &=& \max_{A^{-1}y \neq 0} \frac{ \| y \| }{ \| A^{-1} y \| } = \min_{A^{-1}y \neq 0} \frac{ \| A^{-1} y \| }{ \| y \| } \\
+&=& \min_{y \neq 0} \frac{ \| A^{-1} y \| }{ \| y \| } = \text{minmag}(A^{-1})
+\end{eqnarray}
+$$
+
+---- 
+
+<div style="position: fixed; top: 20px; width: 100%; background-color: white; z-index: 1000;">
+<h2 style="text-align: left;">Interpretação Geométrica do Condicionamento</h2>
+</div>
+
+
+### Teorema 2.1.12
+
+$$\kappa(A) = \frac{maxmag(A)}{minmag(A)}, \text{ para toda matriz $A$ n\~ao singular}.$$
+
+***Nota***: 
+
+1. Em matrizes mal condicionadas, a razão entre as amplificações máxima e mínima são muito grandes ($\kappa(A)\gg 1$). 
+2. Portanto, alguns vetores serão muito ampliados, enquanto outros serão muito contraídos. 
+3. Esta desproporção é que permite erros pequenos serem amplificados quando as matrizes são mal condicionadas.
+
+---
+
+### Condicionamento vs Determinante 
+Ainda que o condicionamento envolva tanto $A$ quanto $A^{-1}$ e que $A^{-1}$ só exista se $det(A)\neq 0$, a verdade é que ***o determinante não é útil no cálculo do condicionamento***.
+
+#### Exemplo
+Considere a matriz 
+
+$$A_\alpha =
+\begin{bmatrix}
+\alpha & 0 \\
+0 & \alpha
+\end{bmatrix}.$$
+
+Temos $\det(A)=\alpha^2$, mas para qualquer norma induzida $\kappa(A)=1$. Portanto, $A_\alpha$ é bem condicionada mesmo quando temos $det(A)=\alpha^2$ muito pequeno.
+
+---
+
+## Mal Condicionamento e *Scaling*
+
+Algumas vezes o problema do mal condicionamento é causado pela diferença entre as magnitudes das linhas (colunas) da matriz.
+
+$$A =
+\begin{bmatrix}
+1 & 0 \\
+0 & \epsilon
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\
+x_2
+\end{bmatrix}=\begin{bmatrix}
+1 \\
+\epsilon
+\end{bmatrix}.$$
+
+Se fizermos uma perturbação $b+\delta b = \begin{bmatrix}
+1 \\
+2\epsilon
+\end{bmatrix}$ encontraremos a solução perturabada $x+\delta x = \begin{bmatrix}
+1 \\
+2
+\end{bmatrix}$, ou seja, $\frac{||\delta x||}{||x||} \gg \frac{||\delta b||}{||b||}$. 
+
+De fato, $A$ é mal condicionada para $\epsilon\approx 0$, 
+$$\kappa_1(A)=\kappa_2(A))=\kappa_\infty(A)=1/\epsilon$$
+
+---
+
+### Teorema 2.2.25  
+Seja $A$ uma matriz não singular qualquer, e sejam $a_1, a_2, \dots, a_n$ suas colunas. Então, para qualquer $i$ e $j$,
+
+$$\kappa_p(A) \geq \frac{\|a_i\|_p}{\|a_j\|_p}, \quad 1 \leq p \leq \infty.$$
+
+**Prova**.  Claramente $a_i = A e_i$ ($e_i$ base canônica). Portanto,  
+
+$$\text{maxmag}(A) = \max_{x \neq 0} \frac{\|Ax\|_p}{\|x\|_p} \geq \frac{\|Ae_i\|_p}{\|e_i\|_p} = \|a_i\|_p,$$
+
+$$\text{minmag}(A) = \min_{x \neq 0} \frac{\|Ax\|_p}{\|x\|_p} \leq \frac{\|Ae_j\|_p}{\|e_j\|_p} = \|a_j\|_p,$$
+
+$$\kappa_p(A) = \frac{\text{maxmag}(A)}{\text{minmag}(A)} \geq \frac{\|a_i\|_p}{\|a_j\|_p}.$$
+
+---
+
+## Estimando o Condicionamento
+
+Uma vez que $\frac{\|A^{-1}w\|_1}{\|w\|_1} \leq \max_{y \neq 0} \frac{\|A^{-1}y\|_1}{\|y\|_1} = \|A^{-1}\|_1.$
+
+Tomando $w = b$, temos $A^{-1}w = x$, então  
+
+$$\frac{\|x\|_1}{\|b\|_1} \leq \|A^{-1}\|_1 \quad \text{e} \quad \kappa_1(A) \geq \frac{\|A\|_1 \|x\|_1}{\|b\|_1} = \frac{\|A\|_1 \|A^{-1}w\|_1}{\|w\|_1}.$$
+
+Se tivermos uma decomposição $LU$ de $A$, podemos calcular $A^{-1}w$ resolvendo $Ac = w$. Além disso, se $w$ for escolhido em uma direção próxima da amplificação máxima por $A^{-1}$, a teremos
+
+$$\kappa_1(A) \approx \frac{\|A\|_1 \|A^{-1}w\|_1}{\|w\|_1}$$
+
+---
+
+## Perturbação na Matriz $A$
+
+### Teorema 2.3.1  
+Se $A$ é não singular e  $\displaystyle \frac{\|\delta A\|}{\|A\|} < \frac{1}{\kappa(A)}$, então $A + \delta A$ é não singular.
+
+### Teorema 2.3.3  
+Seja $A$ não singular, seja $b \neq 0$, e sejam $x$ e $\hat{x} = x + \delta x$ soluções de $Ax = b$ e $(A + \delta A)\hat{x} = b$, respectivamente. Então,
+
+$$\frac{\|\delta x\|}{\|x\|} \leq \kappa(A) \frac{\|\delta A\|}{\|A\|}$$
+
+---
+
+### Demonstração  
+Reescrevendo a equação $(A + \delta A)\hat{x} = b$ como $Ax + A\delta x + \delta A\hat{x} = b$, utilizando a equação $Ax = b$, e reorganizando a equação resultante, obtemos $\delta x = -A^{-1}\delta A \hat{x}$. Assim,  
+
+$$\|\delta x\| \leq \|A^{-1}\| \|\delta A\| \|\hat{x}\|.$$
+
+Dividindo por $\|x\|$ e usando a definição $\kappa(A) = \|A\| \|A^{-1}\|$, obtemos o resultado desejado.
+
+---
+
+## Análise à *posteriori*, usando resíduo 
+
+### Teorema 2.4.1  
+Seja $A$ não singular, seja $b \neq 0$, e seja $\hat{x}$ uma aproximação para a solução de $Ax = b$ (em outras palavras, $\hat{x}$ é qualquer vetor). Seja $r = b - A\hat{x}$. Então,
+
+$$\frac{\|x - \hat{x}\|}{\|x\|} \leq \kappa(A) \frac{\|r\|}{\|b\|}.$$
+
+---
+
 <!-- backgroundColor: orange -->
 
 # PERGUNTAS?
