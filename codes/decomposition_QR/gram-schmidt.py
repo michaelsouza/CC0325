@@ -33,6 +33,31 @@ def modified_gram_schmidt(A):
             A[:, j] -= R[k, j] * Q[:, k]
     return Q, R
 
+def householder_qr(A):
+    """QR decomposition using Householder reflections."""
+    m, n = A.shape
+    Q = np.eye(m)
+    R = A.copy()
+
+    for k in range(n):
+        # Extract the vector to reflect
+        x = R[k:, k]
+        e1 = np.zeros_like(x)
+        e1[0] = 1.0
+
+        # Compute the Householder vector
+        alpha = -np.sign(x[0]) * np.linalg.norm(x)
+        u = x - alpha * e1
+        v = u / np.linalg.norm(u)
+
+        # Apply the Householder transformation to R
+        R[k:, :] -= 2.0 * np.outer(v, np.dot(v, R[k:, :]))
+        
+        # Apply the Householder transformation to Q
+        Q[:, k:] -= 2.0 * np.outer(Q[:, k:] @ v, v)
+
+    return Q, R
+
 def generate_hilbert_matrix(size):
     """
     Generate a Hilbert matrix of given size.
@@ -51,39 +76,57 @@ def generate_hilbert_matrix(size):
 
 def test_hilbert_matrix_precision(size):
     """
-    Compare precision of classical and modified Gram-Schmidt on a Hilbert matrix.
+    Compare precision of classical, modified Gram-Schmidt, and Householder QR on a Hilbert matrix.
     
     Parameters:
     - size: Size of the Hilbert matrix.
     
     Returns:
-    - orth_error_classical: Orthogonality error for Classical Gram-Schmidt.
-    - orth_error_modified: Orthogonality error for Modified Gram-Schmidt.
-    - improvement_ratio: Ratio of classical error to modified error.
+    - results: Dictionary containing orthogonality errors for each method and improvement ratios.
     """
-    console.print(f"\n[bold blue]Testing Gram-Schmidt Methods on {size}x{size} Hilbert Matrix[/bold blue]")
-    
     A = generate_hilbert_matrix(size)
     
-    with console.status("[bold green]Performing Gram-Schmidt orthogonalizations..."):
+    with console.status("[bold green]Performing QR decompositions..."):
+        # Classical Gram-Schmidt
         Q_classical, _ = classical_gram_schmidt(A.copy())
-        Q_modified, _ = modified_gram_schmidt(A.copy())
-    
         orth_error_classical = np.linalg.norm(np.dot(Q_classical.T, Q_classical) - np.eye(size))
+        
+        # Modified Gram-Schmidt
+        Q_modified, _ = modified_gram_schmidt(A.copy())
         orth_error_modified = np.linalg.norm(np.dot(Q_modified.T, Q_modified) - np.eye(size))
-        improvement_ratio = orth_error_classical / orth_error_modified
+        
+        # Householder QR
+        Q_householder, _ = householder_qr(A.copy())
+        orth_error_householder = np.linalg.norm(np.dot(Q_householder.T, Q_householder) - np.eye(size))
+        
+        # Calculate improvement ratios
+        improvement_ratio_classical_modified = orth_error_classical / orth_error_modified
+        improvement_ratio_classical_householder = orth_error_classical / orth_error_householder
+        improvement_ratio_modified_householder = orth_error_modified / orth_error_householder
     
-    return orth_error_classical, orth_error_modified, improvement_ratio
+    results = {
+        'Classical': orth_error_classical,
+        'Modified': orth_error_modified,
+        'Householder': orth_error_householder,
+        'Classical_vs_Modified': improvement_ratio_classical_modified,
+        'Classical_vs_Householder': improvement_ratio_classical_householder,
+        'Modified_vs_Householder': improvement_ratio_modified_householder
+    }
+    
+    return results
 
-# Test with a Hilbert matrix of size 10x10
-hilbert_results = test_hilbert_matrix_precision(10)
+# Test with a Hilbert matrix of size 5x5
+size = 10
+hilbert_results = test_hilbert_matrix_precision(size)
 
 # Create a table to display results
-table = Table(title="Gram-Schmidt Comparison Results")
-table.add_column("Method", style="cyan")
-table.add_column("Orthogonality Error", style="magenta")
-table.add_row("Classical", f"{hilbert_results[0]:.6e}")
-table.add_row("Modified", f"{hilbert_results[1]:.6e}")
+table = Table(title=f"QR Decomposition: Hilbert Matrix {size}x{size}")
+table.add_column("Method", style="cyan", justify="left")
+table.add_column("Orthogonality Error", style="magenta", justify="right")
+
+# Add rows for each method
+table.add_row("Classical Gram-Schmidt", f"{hilbert_results['Classical']:.6e}")
+table.add_row("Modified Gram-Schmidt", f"{hilbert_results['Modified']:.6e}")
+table.add_row("Householder QR", f"{hilbert_results['Householder']:.6e}")
 
 console.print(table)
-console.print(f"\n[bold green]Improvement ratio:[/bold green] {hilbert_results[2]:.2f}x")

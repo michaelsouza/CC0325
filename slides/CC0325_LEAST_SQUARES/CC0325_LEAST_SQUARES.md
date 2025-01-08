@@ -268,6 +268,13 @@ Para anular as entradas abaixo do primeiro elemento de um vetor $\mathbf{x} \in 
 
 ---
 
+# Exercício:
+
+1) Construa uma matriz de Hilbert $6 \times 6$;
+2) Aplique a decomposição QR utilizando (a) o processo de Gram-Schmidt clássico, (b) o processo de Gram-Schmidt modificado e (c) o refletor de Householder;
+3) Compare a precisão da decomposição QR utilizando os três métodos.
+
+---
 <!-- backgroundColor: orange -->
 
 # PERGUNTAS?
