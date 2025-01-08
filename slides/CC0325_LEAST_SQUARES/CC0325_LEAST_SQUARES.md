@@ -19,7 +19,7 @@ math: mathjax
 4. Processo de Gram-Schmidt
 5. Processo de Gram-Schmidt Modificado
 6. Refletores de Householder
-7. Prova de Ortogonalidade dos Refletores
+7. Householder QR
 
 ---
 
@@ -236,43 +236,88 @@ $$H = I - 2 \frac{\mathbf{v} \mathbf{v}^\top}{\mathbf{v}^\top \mathbf{v}}$$
 
 ![bg right:30% fit](images/Householder.png)
 
+# 7. Householder QR
+
+As reflexões de Householder podem ser aplicadas na decomposição $QR$.
+
+O processo envolve a construção iterativa de matrizes de Householder para introduzir zeros abaixo da diagonal principal, transformando $A$ em $R$.
+
+O produto dessas matrizes de Householder forma a matriz ortogonal $Q$.
+
+$$
+\underbrace{H_n H_{n-1} \cdots H_1}_{\text{Matrizes de Householder}} A = R
+$$
+
 ---
 
-## Construção do Refletor
+### Ideia Central
 
-Para anular as entradas abaixo do primeiro elemento de um vetor $\mathbf{x} \in \mathbb{R}^m$:
+Suponha que desejamos refletir um vetor $\mathbf{x} \in \mathbb{R}^n$ de modo que ele se alinhe com um múltiplo do primeiro vetor base padrão $\mathbf{e}_1 = [1, 0, 0, \ldots, 0]^T$.
 
-<div style="display: flex;">
-<div style="width: 50%;">
+<div style="display: flex; justify-content: space-between; border: 1px solid red; border-radius: 10px; padding: 10px;">
+<div style="width: 48%;">
 
-1. Escolha o vetor $\mathbf{e}_1 \in \mathbb{R}^m$:
-   
-   $$
-   \mathbf{e}_1 = \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix}
-   $$
+1. **Calcule a norma de $\mathbf{x}$**:
 
-2. Calcule $\alpha = -\text{sign}(x_1) \| \mathbf{x} \|_2$.
+   $$ \|\mathbf{x}\| = \sqrt{x_1^2 + x_2^2 + \cdots + x_n^2} $$
 
-</div>
-<div style="width: 50%;">
+2. **Determine o escalar $\alpha$**:
 
-3. Defina $\mathbf{v} = \mathbf{x} + \alpha \mathbf{e}_1$ e normalize.
-4. O refletor é dado por:
-   
-   $$
-   H = I - 2 \frac{\mathbf{v} \mathbf{v}^\top}{\mathbf{v}^\top \mathbf{v}}
-   $$
+   $$ \alpha = -\operatorname{sign}(x_1) \cdot \|\mathbf{x}\| $$
 
 </div>
+<div style="width: 48%;">
+
+3. **Construa o vetor $\mathbf{v}$**:
+
+   $$ \mathbf{v} = \mathbf{x} - \alpha \mathbf{e}_1 $$
+
+4. **Normalize $\mathbf{v}$**:
+
+   $$ \mathbf{v} = \frac{\mathbf{v}}{\|\mathbf{v}\|} $$
+
 </div>
+</div>
+
+- A matriz de Householder resultante é $H = I - 2\mathbf{v}\mathbf{v}^T.$
+
+- $H\mathbf{x}$ é um vetor com zeros em todos as componentes, exceto a primeira.
+
+---
+
+### Ideia Central (continuação)
+
+Para aplicar sucessivamente as reflexões de Householder e reduzir a matriz $A$ a uma forma triangular superior, seguimos o seguinte procedimento:
+
+1. Inicialmente, aplicamos a primeira reflexão de Householder $H_1$ à matriz completa $A$, zerando os elementos abaixo do primeiro elemento da primeira coluna. A matriz $H_1$ é da mesma dimensão de $A$.
+
+$$H_1 A = \begin{bmatrix} * & * & * \\ 0 & * & * \\ 0 & * & * \end{bmatrix}$$
+
+---
+
+### Ideia Central (continuação)
+
+2. Depois, excluímos a primeira linha e a primeira coluna de $A$ e construímos a matriz de Householder $H_2$ para zerar os elementos abaixo do primeiro elemento dessa submatriz. Aplicamos 
+
+$$
+\underbrace{\begin{bmatrix} 1 & 0 & 0  \\ 0 & * & * \\ 0 & * & * \end{bmatrix}}_{H_2} H_1 A = \begin{bmatrix} * & * & * \\ 0 & * & * \\ 0 & 0 & * \end{bmatrix}
+$$
+
+3. Esse processo é repetido sucessivamente para submatrizes menores, até que todos os elementos abaixo da diagonal principal de $A$ sejam zerados.
 
 ---
 
 # Exercício:
 
-1) Construa uma matriz de Hilbert $6 \times 6$;
-2) Aplique a decomposição QR utilizando (a) o processo de Gram-Schmidt clássico, (b) o processo de Gram-Schmidt modificado e (c) o refletor de Householder;
-3) Compare a precisão da decomposição QR utilizando os três métodos.
+1. Aplique a decomposição QR utilizando o refletor de Householder à matriz:
+
+$$
+A = \begin{bmatrix} 4 & 1 & 2 \\ 2 & 3 & 1 \\ 1 & 2 & 3 \end{bmatrix}
+$$
+
+2. Construa uma matriz de Hilbert $6 \times 6$;
+2.1. Aplique a decomposição QR utilizando (a) o processo de Gram-Schmidt clássico, (b) o processo de Gram-Schmidt modificado e (c) o refletor de Householder;
+2.2. Compare a precisão da decomposição QR utilizando os três métodos.
 
 ---
 <!-- backgroundColor: orange -->
