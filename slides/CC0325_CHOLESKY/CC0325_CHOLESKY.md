@@ -9,7 +9,7 @@ paginate: true
 
 ---
 
-<div style="width: 60%; border: 1px solid; border-radius:15px; padding:20px; position:absolute; left:10%">
+<div style="width: 60%; border: 1px solid; border-radius:15px; padding:20px; position:absolute; left:10%; top: 15%;">
 
 A decomposição de Cholesky **é a decomposição de uma matriz simétrica e definida positiva no produto de uma matriz triangular inferior e sua transposta** $(A=LL^t)$. 
 
@@ -19,7 +19,7 @@ Foi descoberta por **André-Louis Cholesky (1875-1918)** e publicada postumament
 
 </div>
 
-<div style="position:absolute; width:20%; border-radius:50%; right:8%; top:50%;">
+<div style="position:absolute; width:20%; border-radius:50%; right:10%; top:50%;">
     <img src="images/220px-Andre_Cholesky.jpg" alt="Rounded Image" style="position:absolute; width:300px; border-radius:50%; border: 5px solid">
 </div>
 
@@ -144,8 +144,7 @@ onde $A_k$ é uma matriz $k \times k$ simétrica e definida positiva, $\mathbf{b
 
 **3. Decomposição de $A_{k+1}$:**
 
-Queremos encontrar $L_{k+1}$ tal que: $A_{k+1} = L_{k+1} L_{k+1}^T$
-Onde $L_{k+1}$ tem a forma:
+Queremos $L_{k+1}$ tal que: $A_{k+1} = L_{k+1} L_{k+1}^T$, onde $L_{k+1}$ tem a forma:
 $$L_{k+1} = \begin{bmatrix}
 L_k & \mathbf{0} \\
 \mathbf{d}^T & l_{k+1,k+1}
