@@ -127,7 +127,6 @@ onde:
 - $Q \in \mathbb{R}^{m \times m}$ é uma matriz ortogonal ($Q^\top Q = I$)
 - $R \in \mathbb{R}^{m \times n}$ é uma matriz triangular superior
 
-
 ---
 
 ## Aplicação aos Mínimos Quadrados
@@ -235,6 +234,8 @@ $$H = I - 2 \frac{\mathbf{v} \mathbf{v}^\top}{\mathbf{v}^\top \mathbf{v}}$$
 - $H = H^\top$ (simetria)
 
 ![bg right:30% fit](images/Householder.png)
+
+---
 
 # 7. Householder QR
 

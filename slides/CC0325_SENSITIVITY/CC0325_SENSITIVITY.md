@@ -2,6 +2,7 @@
 marp: true
 theme: default
 paginate: true
+math: mathjax
 ---
 
 # Sensibilidade de Sistemas Lineares
