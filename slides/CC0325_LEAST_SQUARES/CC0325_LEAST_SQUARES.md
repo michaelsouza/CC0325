@@ -237,6 +237,32 @@ $$H = I - 2 \frac{\mathbf{v} \mathbf{v}^\top}{\mathbf{v}^\top \mathbf{v}}$$
 
 ---
 
+## Proposição: A matriz de Householder é ortogonal
+
+Precisamos mostrar que $H^T H = I$.
+
+A matriz de Householder é definida como:
+
+$$ H = I - 2 \frac{\mathbf{v} \mathbf{v}^T}{\mathbf{v}^T \mathbf{v}} $$
+
+onde $\mathbf{v}$ é um vetor.
+
+Primeiro, observe que $H$ é simétrica:
+
+$$ H^T = \left( I - 2 \frac{\mathbf{v} \mathbf{v}^T}{\mathbf{v}^T \mathbf{v}} \right)^T = I - 2 \frac{\mathbf{v} \mathbf{v}^T}{\mathbf{v}^T \mathbf{v}} = H $$
+
+---
+Finalmente, calcule $H^T H$:
+
+$$\begin{align} H^T H &= \left( I - 2 \frac{\mathbf{v} \mathbf{v}^T}{\mathbf{v}^T \mathbf{v}} \right) \left( I - 2 \frac{\mathbf{v} \mathbf{v}^T}{\mathbf{v}^T \mathbf{v}} \right) \\
+&= I - 2 \frac{\mathbf{v} \mathbf{v}^T}{\mathbf{v}^T \mathbf{v}} - 2 \frac{\mathbf{v} \mathbf{v}^T}{\mathbf{v}^T \mathbf{v}} + 4 \frac{\mathbf{v} \mathbf{v}^T \mathbf{v} \mathbf{v}^T}{(\mathbf{v}^T \mathbf{v})^2} \\
+&= I - 4 \frac{\mathbf{v} \mathbf{v}^T}{\mathbf{v}^T \mathbf{v}} + 4 \frac{\mathbf{v} (\mathbf{v}^T \mathbf{v}) \mathbf{v}^T}{(\mathbf{v}^T \mathbf{v})^2} \\
+&= I - 4 \frac{\mathbf{v} \mathbf{v}^T}{\mathbf{v}^T \mathbf{v}} + 4 \frac{\mathbf{v} \mathbf{v}^T}{\mathbf{v}^T \mathbf{v}} = I
+\end{align}$$
+
+
+---
+
 # 7. Householder QR
 
 As reflexões de Householder podem ser aplicadas na decomposição $QR$.
@@ -293,6 +319,34 @@ Para aplicar sucessivamente as reflexões de Householder e reduzir a matriz $A$ 
 1. Inicialmente, aplicamos a primeira reflexão de Householder $H_1$ à matriz completa $A$, zerando os elementos abaixo do primeiro elemento da primeira coluna. A matriz $H_1$ é da mesma dimensão de $A$.
 
 $$H_1 A = \begin{bmatrix} * & * & * \\ 0 & * & * \\ 0 & * & * \end{bmatrix}$$
+
+---
+
+## Proposição: $Hx = \alpha e_1$
+
+Sabendo que 
+$$Hx = x - 2 \frac{v^T x}{v^T v} v\;\;\; \text{ e } \;\;\; \alpha^2 = \|x\|^2,$$
+vamos calcular $v^T x$ e $v^T v$:
+
+$$\begin{align}
+v^T x &= (x - \alpha e_1)^T x = \|x\|^2 - \alpha x_1 \\
+v^T v &= (x - \alpha e_1)^T (x - \alpha e_1) \\
+&= \|x\|^2 - 2 \alpha x_1 + \alpha^2\\
+&= \|x\|^2 - 2 \alpha x_1 + \|x\|^2\\
+&= 2 (\|x\|^2 - \alpha x_1)
+\end{align}$$
+
+---
+
+Agora, fazendo as substituições na expressão para $Hx$, temos:
+
+$$\begin{align}
+Hx &= x - 2 \frac{\|x\|^2 - \alpha x_1}{2 (\|x\|^2 - \alpha x_1)} (x - \alpha e_1) \\
+&= x - (x - \alpha e_1) \\
+&= \alpha e_1 \\
+\end{align}$$
+
+Portanto, para $v = x - \operatorname{sign}(x_1) \|x\| e_1$, a matriz de Householder $H$ satisfaz $Hx = \|x\| e_1$.
 
 ---
 
