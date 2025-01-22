@@ -141,17 +141,13 @@ A^T A &= (V \Sigma^T U^T) U \Sigma V^T \\
 \end{aligned}
 $$
 
-E, portanto, 
-$$
-A^TAV = V\Sigma^T \Sigma = V\text{diag}(\sigma^2),
-$$
-onde $\text{diag}(\sigma^2)$ é a matriz diagonal com os quadrados dos valores singulares de $A$.
+E, portanto, $A^TAV = V\Sigma^T \Sigma = V\text{diag}(\sigma^2)$, onde $\text{diag}(\sigma^2)$ é a matriz diagonal com os quadrados dos valores singulares de $A$.
 
-Sendo assim, os autovalores de $A^T A$ são os quadrados dos valores singulares de $A$.
+Logo, os autovalores de $A^T A$ são os quadrados dos valores singulares de $A$.
 
 ---
 
-## Algoritmo SVD
+## Algoritmo (Ingênuo) para SVD
 <div style="display: flex; justify-content: space-between; gap: 20px;">
 <div style="flex: 1; padding: 0px;">
 
