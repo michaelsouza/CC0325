@@ -8,25 +8,10 @@ backgroundColor: #fff
 ---
 
 # Métodos Numéricos para Autovalores
-### Curso de Graduação em Ciência de Dados
-
-- Autovalores aparecem em PCA, SVD, Cadeias de Markov
-- Veremos os principais algoritmos e teoremas
-- Espere um humor rápido
 
 ---
 
-## Teoremas
-
----
-
-### Teorema Espectral
-- Para matrizes reais simétricas (ou Hermitianas):
-  - Autovalores são reais.
-  - Autovetores podem ser escolhidos ortonormais.
-
-**Relevância:**
-Matrizes reais simétricas aparecem frequentemente (como matrizes de covariância em PCA). Saber que os autovalores são todos reais e os autovetores são ortonormais torna as coisas mais estáveis e fáceis de calcular.
+## Principais Teoremas
 
 ---
 
@@ -45,6 +30,17 @@ O teorema diz que cada autovalor está em pelo menos um dos discos centrados em 
 
 ---
 
+### Teorema Espectral
+- Para matrizes reais simétricas (ou Hermitianas):
+  - Autovalores são reais.
+  - Autovetores podem ser escolhidos ortonormais.
+
+**Relevância:**
+Matrizes reais simétricas aparecem frequentemente (como matrizes de covariância em PCA). Saber que os autovalores são todos reais e os autovetores são ortonormais torna as coisas mais estáveis e fáceis de calcular.
+
+
+---
+
 ### Decomposição de Schur
 - Toda matriz quadrada $A$ pode ser transformada unitariamente:
   $$
@@ -58,6 +54,10 @@ Qualquer matriz pode ser "quase" diagonalizada. Em vez de diagonal, você obtém
 
 **Relevância:**
 É a base de muitos algoritmos de autovalores (como o método QR) que dependem da redução de uma matriz a algo mais simples, mas preservando os autovalores.
+
+---
+
+## Principais Algoritmos
 
 ---
 
