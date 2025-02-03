@@ -30,6 +30,62 @@ O teorema diz que cada autovalor está em pelo menos um dos discos centrados em 
 
 ---
 
+#### Demonstração
+
+Considere:
+1. $A \in \mathbb{C}^{n \times n}$,
+2. $\lambda$ um autovalor de $A$,
+3. $\mathbf{x} = [x_1, x_2, \dots, x_n]^T$ um autovetor associado, com $\mathbf{x} \neq \mathbf{0}$
+
+Selecione um índice $k$ tal que:
+$$
+|x_k| = \max_{1 \leq i \leq n} |x_i|
+$$
+Assim, temos:
+$$
+|x_j| \leq |x_k| \quad \text{para todo } j = 1, 2, \dots, n.
+$$
+
+---
+
+**Aplicação na Equação dos Autovalores**
+
+Pela definição de autovalor, temos $A\mathbf{x} = \lambda \mathbf{x}.$
+
+Para a $k$-ésima linha, a equação se torna:
+$$
+\lambda x_k = a_{kk} x_k + \sum_{j \neq k} a_{kj} x_j.
+$$
+Ou de forma equivalente:
+$$
+(\lambda - a_{kk}) x_k = \sum_{j \neq k} a_{kj} x_j.
+$$
+
+Dividindo ambos os lados por $x_k$ (lembrando que $x_k \neq 0$):
+$$
+\lambda - a_{kk} = \sum_{j \neq k} a_{kj} \frac{x_j}{x_k}.
+$$
+
+---
+
+**Aplicando a Desigualdade Triangular**
+
+Tomando o valor absoluto em ambos os lados:
+$$
+|\lambda - a_{kk}| = \left| \sum_{j \neq k} a_{kj} \frac{x_j}{x_k} \right|
+$$
+Usando a desigualdade triangular:
+$$
+|\lambda - a_{kk}| \leq \sum_{j \neq k} |a_{kj}| \left| \frac{x_j}{x_k} \right|.
+$$
+
+Como $|x_j/x_k| \leq 1$ para todo $j$:
+$$
+|\lambda - a_{kk}| \leq \sum_{j \neq k} |a_{kj}| = R_k.
+$$
+
+---
+
 ### Teorema Espectral
 - Para matrizes reais simétricas (ou Hermitianas):
   - Autovalores são reais.
