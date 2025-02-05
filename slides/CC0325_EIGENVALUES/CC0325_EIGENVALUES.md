@@ -30,6 +30,62 @@ O teorema diz que cada autovalor está em pelo menos um dos discos centrados em 
 
 ---
 
+#### Demonstração
+
+Considere:
+1. $A \in \mathbb{C}^{n \times n}$,
+2. $\lambda$ um autovalor de $A$,
+3. $\mathbf{x} = [x_1, x_2, \dots, x_n]^T$ um autovetor associado, com $\mathbf{x} \neq \mathbf{0}$
+
+Selecione um índice $k$ tal que:
+$$
+|x_k| = \max_{1 \leq i \leq n} |x_i|
+$$
+Assim, temos:
+$$
+|x_j| \leq |x_k| \quad \text{para todo } j = 1, 2, \dots, n.
+$$
+
+---
+
+**Aplicação na Equação dos Autovalores**
+
+Pela definição de autovalor, temos $A\mathbf{x} = \lambda \mathbf{x}.$
+
+Para a $k$-ésima linha, a equação se torna:
+$$
+\lambda x_k = a_{kk} x_k + \sum_{j \neq k} a_{kj} x_j.
+$$
+Ou de forma equivalente:
+$$
+(\lambda - a_{kk}) x_k = \sum_{j \neq k} a_{kj} x_j.
+$$
+
+Dividindo ambos os lados por $x_k$ (lembrando que $x_k \neq 0$):
+$$
+\lambda - a_{kk} = \sum_{j \neq k} a_{kj} \frac{x_j}{x_k}.
+$$
+
+---
+
+**Aplicando a Desigualdade Triangular**
+
+Tomando o valor absoluto em ambos os lados:
+$$
+|\lambda - a_{kk}| = \left| \sum_{j \neq k} a_{kj} \frac{x_j}{x_k} \right|
+$$
+Usando a desigualdade triangular:
+$$
+|\lambda - a_{kk}| \leq \sum_{j \neq k} |a_{kj}| \left| \frac{x_j}{x_k} \right|.
+$$
+
+Como $|x_j/x_k| \leq 1$ para todo $j$:
+$$
+|\lambda - a_{kk}| \leq \sum_{j \neq k} |a_{kj}| = R_k.
+$$
+
+---
+
 ### Teorema Espectral
 - Para matrizes reais simétricas (ou Hermitianas):
   - Autovalores são reais.
@@ -40,6 +96,47 @@ Matrizes reais simétricas aparecem frequentemente (como matrizes de covariânci
 
 ---
 
+#### Demonstração
+
+***Teorema Fundamental da Álgebra***  
+Todo polinômio de grau $n$ com coeficientes complexos, que deve possuir pelo menos uma raiz.
+
+
+***Teorema de Existência de Autovalores***
+
+Para qualquer matriz quadrada $A\in\mathbb{C}^{n\times n}$, existe pelo menos um número $\lambda\in\mathbb{C}$ tal que  $\det(A-\lambda I)=0.$
+
+Com base nestes teoremas, temos:
+1. **Existência de um autovalor real:**  
+   Como $A$ é simétrica, pelo teorema de existência, existe um autovalor real $\lambda$ com um autovetor unitário $v$, isto é,  
+   $$
+   Av=\lambda v \quad \text{e} \quad \|v\|=1.
+   $$
+---
+
+2. **Redução para um subespaço:**  
+Seja $v$ um autovetor unitário de $A$ associado ao autovalor $\lambda$. Definimos o subespaço $V=\{x\in\mathbb{R}^n:x^Tv=0\}$.
+  Usando a simetria de $A$ e o fato de que $Av=\lambda v$, podemos escrever:
+$$
+v^T(Ax)=(v^TA)x=(Av)^Tx=(\lambda v)^Tx=\lambda(v^Tx)=\lambda\cdot0=0.
+$$
+
+- Ou seja, $V$ é invariante com respeito a $A$, isto é, se $x\in V$, então $Ax\in V$.
+- Agora, restrinja $A$ a $V$ para obter uma matriz simétrica $A|_V$ de dimensão $n-1$.
+
+---
+3. **Aplicação de Indução:**  
+   Pela hipótese de indução, $A|_V$ possui uma base ortonormal de autovetores.  
+   Juntando $v$ com essa base, obtemos um conjunto ortonormal de $n$ autovetores de $A$.
+
+4. **Diagonalização Ortogonal:**  
+   Definindo $Q$ como a matriz cujas colunas são esses autovetores, temos  
+   $$
+   Q^TAQ=\Lambda,
+   $$
+   onde $\Lambda$ é a matriz diagonal com os autovalores reais de $A$.
+
+---
 ### Decomposição de Schur
 - Toda matriz quadrada $A$ pode ser transformada unitariamente:
   $$
@@ -53,6 +150,50 @@ Qualquer matriz pode ser "quase" diagonalizada. Em vez de diagonal, você obtém
 
 **Relevância:**
 É a base de muitos algoritmos de autovalores (como o método QR) que dependem da redução de uma matriz a algo mais simples, mas preservando os autovalores.
+
+---
+
+#### Demonstração
+
+1. **Existência de um autovalor:**  
+   Seja $A\in\mathbb{C}^{n\times n}$. Pelo teorema da existência de autovalores, existe $\lambda\in\mathbb{C}$ e um autovetor não nulo $v$. Normalizando, podemos assumir que $\|v\|=1$.
+
+2. **Construção de uma base ortonormal:**  
+   Complete $v$ para uma base ortonormal de $\mathbb{C}^n$. Seja $Q_1$ a matriz unitária formada por essa base, onde a primeira coluna é $v$.
+
+3. **Transformação unitária:**  
+   Considere a transformação:
+   $$
+   Q_1^*AQ_1=
+   \begin{bmatrix}
+   \lambda & w^*\\
+   0 & A_1
+   \end{bmatrix},
+   $$
+   onde $w\in\mathbb{C}^{n-1}$ e $A_1\in\mathbb{C}^{(n-1)\times(n-1)}$.
+
+---
+
+4. **Aplicação de indução:**  
+   Pelo princípio da indução, existe uma matriz unitária $Q_2\in\mathbb{C}^{(n-1)\times(n-1)}$ que triangulariza $A_1$, isto é,
+   $$
+   Q_2^*A_1Q_2=U_1,
+   $$
+   onde $U_1$ é triangular superior.
+
+5. **Construção final:**  
+   Defina
+   $$
+   Q=\;Q_1\begin{bmatrix}
+   1 & 0\\
+   0 & Q_2
+   \end{bmatrix},\quad \text{ e } \quad 
+   U=\begin{bmatrix}
+   \lambda & *\\
+   0 & U_1
+   \end{bmatrix}.
+   $$
+   Assim, $Q$ é unitária com  $U$ triangular superior e seus elementos diagonais sendo os autovalores de $A$.
 
 ---
 
