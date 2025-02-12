@@ -5,6 +5,7 @@ theme: default
 paginate: true
 size: 16:9
 backgroundColor: #fff
+math: katex
 ---
 
 # Métodos Numéricos para Autovalores
@@ -389,10 +390,81 @@ Como  $|\lambda_1| > |\lambda_2|$, temos uma contração do termo $c = A_{2,1}$ 
 ### Esboço
 - Rotacione pares de eixos para zerar as entradas fora da diagonal.
 - Converge para uma matriz diagonal com autovalores na diagonal.
+- Redução da "energia" off-diagonal.
 
-### Uso Real
+### Considerações
 - Fácil de entender para ensino.
-- Não é o mais rápido para problemas de grande escala, mas conceitualmente simples.
+- Lento em problemas de grande escala, mas conceitualmente simples.
+
+---
+
+### Justificativa
+
+- **Transformação de Similaridade:**
+  - Cada rotação $G(i,j,\theta)$ satisfaz
+    $$
+    A' = G(i,j,\theta)^T\, A\, G(i,j,\theta)
+    $$
+  - Autovalores permanecem inalterados.
+
+- **Redução Off-diagonal:**
+  - A rotação elimina (ou diminui) o elemento $a_{ij}$.
+  - Iterações sucessivas convergem para uma matriz quase diagonal.
+
+---
+
+#### Matrizes de Rotação $G(i,j,\theta)$
+
+- **Construção:**
+  - Partem da matriz identidade $I_n$.
+  - Modificações:
+    - $G_{ii} = \cos\theta$
+    - $G_{ij} = -\sin\theta$
+    - $G_{ji} = \sin\theta$
+    - $G_{jj} = \cos\theta$
+  - Outras entradas: inalteradas.
+
+- **Objetivo:**
+  - Anular o elemento $a_{ij}$ de $A$ por meio de transformações de similaridade.
+
+---
+
+#### Diferenças Entre $A$ e $A'$
+
+- (**Alterados**) Bloco formado por linhas/colunas $i$ e $j$:
+  - $A'_{ii} = c^2\,A_{ii} - 2sc\,A_{ij} + s^2\,A_{jj}$
+  - $A'_{jj} = s^2\,A_{ii} + 2sc\,A_{ij} + c^2\,A_{jj}$
+  - $A'_{ij} = A'_{ji} = (c^2-s^2)A_{ij} + sc\,(A_{ii}-A_{jj})$  (será anulado)
+
+- **Inalterados:** Elementos com índices fora do conjunto $\{i,j\}$.
+
+- **Nas linhas/colunas $i$ e $j$ com outros índices $k$:**
+  - $A'_{ik} = c\,A_{ik} - s\,A_{jk}$
+  - $A'_{jk} = s\,A_{ik} + c\,A_{jk}$
+  - Portanto, $(A'_{ik})^2 + (A'_{jk})^2 = A_{ik}^2 + A_{jk}^2$ (**"energia" preservada**)
+
+---
+
+#### Preenchimento (Fill-in)
+
+- **O que ocorre:**
+  - Elementos inicialmente nulos em linhas/colunas $i$ ou $j$ podem se tornar não-nulos.  
+  - Isso ocorre devido às combinações lineares durante a rotação.
+
+- **Impacto:**
+  - O "fill-in" local não impede a convergência, pois a norma off-diagonal é reduzida.
+  - No entanto, é inviável aplicá-lo em matrizes esparsar de grande escala.
+
+---
+
+#### Garantia de Convergência
+
+- **Mesmo com preenchimento:**
+  - Cada rotação anula ou diminui significativamente o elemento $A_{ij}$.
+  - A soma dos quadrados dos elementos fora da diagonal (norma off-diagonal) decai a cada iteração.
+
+- **Resultado:**
+  - A matriz converge para uma forma diagonal cujos elementos diagonais são os autovalores de $A$.
 
 ---
 
