@@ -87,64 +87,13 @@ $$
 
 ---
 
-### Teorema Espectral
-- Para matrizes reais simétricas (ou Hermitianas):
-  - Autovalores são reais.
-  - Autovetores podem ser escolhidos ortonormais.
-
-**Relevância:**
-Matrizes reais simétricas aparecem frequentemente (como matrizes de covariância em PCA). Saber que os autovalores são todos reais e os autovetores são ortonormais torna as coisas mais estáveis e fáceis de calcular.
-
----
-
-#### Demonstração
-
-***Teorema Fundamental da Álgebra***  
-Todo polinômio de grau $n$ com coeficientes complexos, que deve possuir pelo menos uma raiz.
-
-
-***Teorema de Existência de Autovalores***
-
-Para qualquer matriz quadrada $A\in\mathbb{C}^{n\times n}$, existe pelo menos um número $\lambda\in\mathbb{C}$ tal que  $\det(A-\lambda I)=0.$
-
-Com base nestes teoremas, temos:
-1. **Existência de um autovalor real:**  
-   Como $A$ é simétrica, pelo teorema de existência, existe um autovalor real $\lambda$ com um autovetor unitário $v$, isto é,  
-   $$
-   Av=\lambda v \quad \text{e} \quad \|v\|=1.
-   $$
----
-
-2. **Redução para um subespaço:**  
-Seja $v$ um autovetor unitário de $A$ associado ao autovalor $\lambda$. Definimos o subespaço $V=\{x\in\mathbb{R}^n:x^Tv=0\}$.
-  Usando a simetria de $A$ e o fato de que $Av=\lambda v$, podemos escrever:
-$$
-v^T(Ax)=(v^TA)x=(Av)^Tx=(\lambda v)^Tx=\lambda(v^Tx)=\lambda\cdot0=0.
-$$
-
-- Ou seja, $V$ é invariante com respeito a $A$, isto é, se $x\in V$, então $Ax\in V$.
-- Agora, restrinja $A$ a $V$ para obter uma matriz simétrica $A|_V$ de dimensão $n-1$.
-
----
-3. **Aplicação de Indução:**  
-   Pela hipótese de indução, $A|_V$ possui uma base ortonormal de autovetores.  
-   Juntando $v$ com essa base, obtemos um conjunto ortonormal de $n$ autovetores de $A$.
-
-4. **Diagonalização Ortogonal:**  
-   Definindo $Q$ como a matriz cujas colunas são esses autovetores, temos  
-   $$
-   Q^TAQ=\Lambda,
-   $$
-   onde $\Lambda$ é a matriz diagonal com os autovalores reais de $A$.
-
----
 ### Decomposição de Schur
 - Toda matriz quadrada $A$ pode ser transformada unitariamente:
   $$
     A = Q U Q^*
   $$
   com $U$ triangular superior.
-- Autovalores estão na diagonal de $U$.
+- Os autovalores de $A$  estão na diagonal de $U$.
 
 **Significado:**
 Qualquer matriz pode ser "quase" diagonalizada. Em vez de diagonal, você obtém uma forma triangular superior com os mesmos autovalores na diagonal.
@@ -195,6 +144,25 @@ Qualquer matriz pode ser "quase" diagonalizada. Em vez de diagonal, você obtém
    \end{bmatrix}.
    $$
    Assim, $Q$ é unitária com  $U$ triangular superior e seus elementos diagonais sendo os autovalores de $A$.
+
+---
+
+### Teorema Espectral
+- Toda matriz $A$ real e simétrica (ou Hermitiana) pode ser fatorada em
+$$A = Q\Lambda Q^t,$$
+  - $\Lambda$ é diagonal e formada pelos autovetores de $A$.
+  - $Q$ é ortogonal, ou seja, $QQ^t=I$.
+
+**Relevância:**
+Matrizes reais simétricas aparecem frequentemente (como matrizes de covariância em PCA). Saber que os autovalores são todos reais e os autovetores são ortonormais torna as coisas mais estáveis e fáceis de calcular.
+
+---
+
+#### Demonstração
+
+- O Teorema Espectral é um corolário da decomposição de Schur, pois $A$ simétrica implica $A = QUQ^* = QU^*Q^*= A^*$. Portanto, $U$ é triangular superior e Hermitiana, ou seja, $U$ é real a diagonal ($\Lambda$).
+
+- Mais ainda, se $v\in\mathbb{C}^n$ e $\lambda\in\mathbb{R}$ formam um autopar de $A$ (real e simétrica), então $\lambda\overline{v} = \overline{\lambda v} = \overline{Av}=\overline{A}\overline{v} = A\overline{v}$. Portanto, $\overline{v}$ e $u=v+\overline{v}\in\mathbb{R}^n$ serão um autovetores de $A$. Logo, a partir da matriz unitária $Q$, podemos formar uma matriz real ortogonal de autovetores de $A$.
 
 ---
 
