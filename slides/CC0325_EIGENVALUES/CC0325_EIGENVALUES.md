@@ -6,7 +6,12 @@ paginate: true
 size: 16:9
 backgroundColor: #fff
 math: katex
+
+
 ---
+<style>
+  @import url('https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css');
+</style>
 
 # Métodos Numéricos para Autovalores
 
@@ -269,8 +274,8 @@ Após a convergência, recupere o autovalor de $A$ através de
 
 ### Justificativa
 
-<div style="display: flex; gap: 20px">
-<div style="flex:1">
+<div class="row">
+<div class="col">
 
 A cada iteração, temos
 $$
@@ -281,7 +286,7 @@ $$A_{k+1} \sim A_k$$
 Se $A$ for diagonalizável, o processo converge para uma matriz triangular $U$ com os autovalores de $A$ na diagonal.
 
 </div>
-<div style="flex: 1">
+<div class="col">
 
 ***Caso: $2 \times 2$***
 
@@ -383,17 +388,21 @@ Como  $|\lambda_1| > |\lambda_2|$, temos uma contração do termo $c = A_{2,1}$ 
 
 #### Matrizes de Rotação $G(i,j,\theta)$
 
-- **Construção:**
-  - Partem da matriz identidade $I_n$.
-  - Modificações:
-    - $G_{ii} = \cos\theta$
-    - $G_{ij} = -\sin\theta$
-    - $G_{ji} = \sin\theta$
-    - $G_{jj} = \cos\theta$
-  - Outras entradas: inalteradas.
+**Construção:**
+Uma forma concisa de escrever a matriz de rotação $G(i,j,\theta)$ é
 
-- **Objetivo:**
-  - Anular o elemento $a_{ij}$ de $A$ por meio de transformações de similaridade.
+$$
+G(i,j,\theta) = I_n + (\cos\theta - 1)(e_i e_i^T + e_j e_j^T) - \sin\theta\,(e_i e_j^T - e_j e_i^T),
+$$
+
+onde $I_n$ é a matriz identidade e $e_i$ (ou $e_j$) é o $i$-ésimo vetor canônico.
+
+Essa notação garante que:
+- Para $k\neq i,j$, a entrada $G_{kk} = 1$;
+- $G_{ii} = G_{jj} = 1 + (\cos\theta-1) = \cos\theta$;
+- $G_{ij} = -\sin\theta$ e $G_{ji} = \sin\theta$.
+
+$G$ realiza uma rotação no plano das direções $e_i$ e $e_j$ e anula o elemento $a_{ij}$ de $A$ por meio de transformações de similaridade.
 
 ---
 
@@ -437,13 +446,56 @@ Como  $|\lambda_1| > |\lambda_2|$, temos uma contração do termo $c = A_{2,1}$ 
 ---
 
 ## Iteração do Quociente de Rayleigh
-### Passos Principais
-- Atualize a estimativa do autovalor via $\rho(x) = \frac{x^T A x}{x^T x}$.
-- Ajuste o shift em cada iteração.
 
-### Desempenho
-- Convergência cúbica perto de um autovalor real (rápido, mas cada iteração pode ser cara).
-- Bom quando você precisa de alta precisão para um autopar.
+<div class="row">
+<div class="col">
+
+- Combina a iteração inversa com *shift* basedo no ***Quociente de Rayleigh***
+$$\rho(x) = \frac{x^T A x}{x^T x}$$
+- O autopar é atualizado por iteração
+- Convergência cúbica
+
+</div>
+<div class="col">
+
+```python
+def rqi(A, x0, iterations=10):
+  x = x0
+  I = np.eye(A.shape[0]
+  row = 0
+  for _ in range(iterations):
+    row_old = row
+    rho = x.T @ A @ x / (x.T @ x)
+    if np.abs(row - row_old) < epsilon:
+      break
+    x = solve(A - rho * I, x)
+    x = x / norm(x)    
+  
+  return row, x
+```
+</div>
+
+---
+
+### Justificativa
+Em cada iteração, o RQI calcula o **Quociente de Rayleigh** 
+$$\rho(x) = \frac{x^T A x}{x^T x}$$
+usando o vetor $x$ da iteração anterior.
+
+O valor $\rho(x)$ serve como um **shift** dinâmico, ajustado a cada passo para se aproximar do autovalor desejado.
+
+O RQI utiliza a **iteração inversa** com este shift dinâmico para encontrar o próximo vetor $x_{k+1}$ resolvendo 
+  $$(A - \rho(x_k) I) x_{k+1} = x_k.$$    
+
+---
+A iteração inversa é equivalente ao método da potência aplicado à matriz **inversa deslocada** $(A - \rho(x_k) I)^{-1}$.
+
+Se $\lambda_i$ são os autovalores de $A$, então os autovalores de $(A - \rho(x_k) I)^{-1}$ são 
+  $$\mu_i = \frac{1}{\lambda_i - \rho(x_k)}$$
+
+Finalmente, quando $\rho(x_k)$ se aproxima de um autovalor $\lambda_j$ de $A$, o autovalor $\mu_j$ de $(A - \rho(x_k) I)^{-1}$ torna-se **dominante em magnitude**, pois o denominador $|\lambda_j - \rho(x_k)|$ fica cada vez menor.
+
+Resumindo, o RQI acelera drasticamente a convergência ao refinar o shift dinâmico na iteração inversa.
 
 ---
 
@@ -465,11 +517,3 @@ Como  $|\lambda_1| > |\lambda_2|$, temos uma contração do termo $c = A_{2,1}$ 
 
 ### Caso de uso
 - Problemas grandes, esparsos e não simétricos (como matrizes de adjacência de grafos direcionados).
-
----
-
-## Conclusão
-- Métodos da Potência / Rayleigh: abordagens iterativas "atire para o topo".
-- QR: robusto para espectro completo, usado em bibliotecas padrão.
-- Lanczos / Arnoldi: mantenha barato e aproxime para matrizes grandes.
-- Teoria espectral: real simétrico é o melhor cenário. Não simétrico precisa de cautela extra.
